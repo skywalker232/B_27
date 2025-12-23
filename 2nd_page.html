@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>birthday</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: #FFC0CB;
+        min-height: 100vh;
+        overflow: hidden; /* Prevents scrollbars from confetti */
+        position: relative;
+    }
+    
+    /* Balloons Container */
+    .balloons-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 2; /* Above background, below content */
+    }
+    
+    /* Individual Balloon Styles */
+    .balloon {
+        width: 60px;
+        height: 70px;
+        border-radius: 50%;
+        position: absolute;
+        bottom: -100px; /* Start below screen */
+        animation: floatUp 20s linear infinite;
+        box-shadow: inset -10px -10px 0 rgba(0, 0, 0, 0.07);
+        z-index: 2;
+    }
+    
+    .balloon::before {
+        content: '';
+        width: 2px;
+        height: 60px;
+        background: #333;
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .balloon::after {
+        content: '▲';
+        font-size: 12px;
+        color: #333;
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    /* Different balloon colors and positions */
+    .balloon:nth-child(1) {
+        background: radial-gradient(circle at 30% 30%, #ff6b6b, #ff3838);
+        left: 10%;
+        animation-delay: 0s;
+        animation-duration: 25s;
+    }
+    
+    .balloon:nth-child(2) {
+        background: radial-gradient(circle at 30% 30%, #4cd137, #44bd32);
+        left: 25%;
+        animation-delay: 3s;
+        animation-duration: 22s;
+    }
+    
+    .balloon:nth-child(3) {
+        background: radial-gradient(circle at 30% 30%, #0097e6, #0652DD);
+        left: 40%;
+        animation-delay: 6s;
+        animation-duration: 28s;
+    }
+    
+    .balloon:nth-child(4) {
+        background: radial-gradient(circle at 30% 30%, #fbc531, #e1b12c);
+        left: 55%;
+        animation-delay: 9s;
+        animation-duration: 24s;
+    }
+    
+    .balloon:nth-child(5) {
+        background: radial-gradient(circle at 30% 30%, #9b59b6, #8e44ad);
+        left: 70%;
+        animation-delay: 12s;
+        animation-duration: 26s;
+    }
+    
+    .balloon:nth-child(6) {
+        background: radial-gradient(circle at 30% 30%, #00cec9, #00a8a8);
+        left: 85%;
+        animation-delay: 15s;
+        animation-duration: 23s;
+    }
+    
+    .balloon:nth-child(7) {
+        background: radial-gradient(circle at 30% 30%, #fd79a8, #e84393);
+        left: 20%;
+        animation-delay: 18s;
+        animation-duration: 27s;
+    }
+    
+    .balloon:nth-child(8) {
+        background: radial-gradient(circle at 30% 30%, #ffeaa7, #fdcb6e);
+        left: 50%;
+        animation-delay: 21s;
+        animation-duration: 25s;
+    }
+    
+    @keyframes floatUp {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+        }
+        10% {
+            transform: translateY(-100px) rotate(5deg);
+        }
+        20% {
+            transform: translateY(-200px) rotate(-5deg);
+        }
+        30% {
+            transform: translateY(-300px) rotate(3deg);
+        }
+        40% {
+            transform: translateY(-400px) rotate(-3deg);
+        }
+        50% {
+            transform: translateY(-500px) rotate(2deg);
+        }
+        60% {
+            transform: translateY(-600px) rotate(-2deg);
+        }
+        70% {
+            transform: translateY(-700px) rotate(1deg);
+        }
+        80% {
+            transform: translateY(-800px) rotate(-1deg);
+        }
+        90% {
+            transform: translateY(-900px) rotate(0.5deg);
+            opacity: 0.8;
+        }
+        100% {
+            transform: translateY(-1000px) rotate(0deg);
+            opacity: 0;
+        }
+    }
+
+    /* Your existing Background Image Layer */
+    body::before {
+        position: fixed;
+        width: min(1400px, 90vw);
+        top: 10%;
+        left: 50%;
+        height: 90%;
+        transform: translateX(-50%);
+        content: '';
+        background-image: url(images/bg.png);
+        background-size: 100%;
+        background-repeat: no-repeat;
+        background-position: top center;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0.5; /* Lowered so it doesn't clash with content */
+    }
+
+    /* Confetti Container */
+    .confetti-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1; /* Below balloons, above background */
+        overflow: hidden;
+    }
+
+    /* Individual Confetti Pieces */
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        opacity: 0.8;
+        pointer-events: none;
+        top: -20px;
+    }
+    
+    /* Confetti Colors */
+    .confetti:nth-child(10n) { background-color: #ff6b6b; }
+    .confetti:nth-child(10n+1) { background-color: #4cd137; }
+    .confetti:nth-child(10n+2) { background-color: #0097e6; }
+    .confetti:nth-child(10n+3) { background-color: #fbc531; }
+    .confetti:nth-child(10n+4) { background-color: #9b59b6; }
+    .confetti:nth-child(10n+5) { background-color: #00cec9; }
+    .confetti:nth-child(10n+6) { background-color: #fd79a8; }
+    .confetti:nth-child(10n+7) { background-color: #ffeaa7; }
+    .confetti:nth-child(10n+8) { background-color: #ffffff; }
+    .confetti:nth-child(10n+9) { background-color: #333333; }
+
+    /* Compact & Clean Surprise Box */
+.surprise-container {
+    position: fixed;
+    bottom: 30px; /* Slightly higher to ensure it's not cut off */
+    right: 20px;
+    z-index: 1000;
+}
+
+.gift-box-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    height: 75px;
+    background-color: #e84393;
+    position: relative;
+    border-radius: 8px;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    animation: giftWobble 2s ease-in-out infinite;
+    cursor: pointer;
+    overflow: visible;
+}
+
+.gift-lid {
+    position: absolute;
+    top: -10px;
+    left: -5px;
+    width: 100px;
+    height: 20px;
+    background-color: #ff7675;
+    border-radius: 4px;
+    z-index: 5;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Vertical Ribbon */
+.gift-box-trigger::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -10px;
+    transform: translateX(-50%);
+    width: 15px;
+    height: 85px;
+    background-color: #fbc531;
+    z-index: 2;
+}
+
+.gift-text {
+    position: relative;
+    z-index: 10; /* Above the ribbon */
+    color: white;
+    font-weight: bold;
+    font-size: 10px;
+    line-height: 1.2;
+    text-align: center;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    pointer-events: none;
+}
+
+@keyframes giftWobble {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.08) rotate(5deg); }
+}
+
+/* Mobile Tweak: Moves box slightly for very small screens */
+@media (max-width: 360px) {
+    .surprise-container {
+        right: 10px;
+        bottom: 20px;
+    }
+}
+
+
+     /* Confetti Animation */
+    @keyframes confettiFall {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(100vh) rotate(720deg);
+            opacity: 0;
+        }
+    }
+
+    /* Burst & Float Animation */
+    @keyframes burstAndFloat {
+        0% {
+            transform: translate(0, 0) scale(0);
+            opacity: 1;
+        }
+        20% {
+            transform: translate(var(--x), var(--y)) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(calc(var(--x) * 1.5), 110vh) rotate(720deg);
+            opacity: 0;
+        }
+    }
+
+    .banner {
+        position: relative;
+        z-index: 10; /* Keeps your slider above balloons and confetti */
+    }
+</style>
+       
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Balloons Container -->
+    <div class="balloons-container" id="balloonsContainer">
+        <!-- Balloons will be added by JavaScript -->
+    </div>
+    
+    <!-- Confetti Container -->
+    <div class="confetti-container" id="confettiContainer">
+        <!-- Confetti will be added by JavaScript -->
+    </div>
+
+    <!-- Your Original Banner Content -->
+    <div class="banner">
+        <div class="slider" style="--quantity: 10">
+            <div class="item" style="--position: 1"><img src="images/dragon_1.jpg" alt=""></div>
+            <div class="item" style="--position: 2"><img src="images/dragon_2.jpg" alt=""></div>
+            <div class="item" style="--position: 3"><img src="images/dragon_3.jpg" alt=""></div>
+            <div class="item" style="--position: 4"><img src="images/dragon_4.jpg" alt=""></div>
+            <div class="item" style="--position: 5"><img src="images/dragon_5.jpg" alt=""></div>
+            <div class="item" style="--position: 6"><img src="images/dragon_6.jpg" alt=""></div>
+            <div class="item" style="--position: 7"><img src="images/dragon_7.jpg" alt=""></div>
+            <div class="item" style="--position: 8"><img src="images/dragon_8.jpg" alt=""></div>
+            <div class="item" style="--position: 9"><img src="images/dragon_9.jpg" alt=""></div>
+            <div class="item" style="--position: 10"><img src="images/dragon_10.jpg" alt=""></div>
+        </div>
+        <div class="content">
+            <h1 data-content="Happy Birthday">
+                Happy Birthday
+            </h1>
+            <div class="author">
+                <h2></h2>
+                <p><b></b></p>
+                <p>
+                   
+                </p>
+            </div>
+            <div class="model"></div>
+        </div>
+    </div>
+   <div class="surprise-container">
+    <a href="video_page.html" class="gift-box-trigger">
+        <div class="gift-lid"></div>
+        <div class="gift-body">
+            <span class="gift-text">CLICK TO OPEN<br>SURPRISE</span>
+        </div>
+    </a>
+</div>
+    <script>
+        // Create Balloons
+        function createBalloons() {
+            const container = document.getElementById('balloonsContainer');
+            container.innerHTML = '';
+            
+            // Create 8 balloons
+            for (let i = 0; i < 8; i++) {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                container.appendChild(balloon);
+            }
+        }
+        
+        // Create Confetti
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            
+            // Clear old confetti
+            container.innerHTML = '';
+            
+            // Create 100 confetti pieces
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                
+                // Random position and animation
+                const left = Math.random() * 100;
+                const animationDuration = 3 + Math.random() * 7; // 3-10 seconds
+                const animationDelay = Math.random() * 5; // 0-5 seconds delay
+                const size = 5 + Math.random() * 10; // 5-15px
+                
+                confetti.style.left = `${left}%`;
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confetti.style.animation = `confettiFall ${animationDuration}s linear ${animationDelay}s infinite`;
+                
+                container.appendChild(confetti);
+            }
+        }
+        
+        // Initialize effects when page loads
+        window.addEventListener('load', function() {
+            createBalloons();
+            createConfetti();
+            
+            // Refresh confetti every 15 seconds
+            setInterval(createConfetti, 15000);
+            
+            // Refresh balloons every 30 seconds
+            setInterval(createBalloons, 30000);
+        });
+    </script>
+    
+</body>
+</html>

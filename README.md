@@ -1,2 +1,0 @@
-# B_27
-BIRTHDAY 

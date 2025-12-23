@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Birthday Cake</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff006e;
+            --secondary: #6c5ce7;
+            --accent: #ffd166;
+            --dark: #1a1a2e;
+            --text-light: #ffffff;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-light);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden; /* Prevents scroll during celebration */
+        }
+
+        /* Animated Background */
+        .floating-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .main-wrapper {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Centers everything vertically */
+            min-height: 100vh;
+            padding: 20px;
+            gap: 40px;
+        }
+
+        /* Header */
+        .birthday-message {
+            text-align: center;
+        }
+
+        .birthday-title {
+            font-size: clamp(2.5rem, 10vw, 4rem);
+            background: linear-gradient(45deg, var(--primary), var(--accent), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .birthday-subtitle {
+            font-size: clamp(1.1rem, 5vw, 1.8rem);
+            color: var(--accent);
+            opacity: 0.9;
+        }
+
+        /* Cake Container */
+        .cake-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            position: relative;
+            margin-top: 80px;
+        }
+
+        .plate {
+            width: clamp(280px, 80vw, 400px);
+            height: 20px;
+            background: linear-gradient(to bottom, #dfe6e9, #b2bec3);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        .cake {
+            width: clamp(240px, 70vw, 350px);
+            height: clamp(120px, 25vh, 160px);
+            background: linear-gradient(135deg, #f8c291 0%, #e55039 100%);
+            border-radius: 20px 20px 0 0;
+            position: relative;
+            margin-bottom: -5px;
+        }
+
+        .cake-layer { position: absolute; width: 100%; border-radius: 10px; }
+        .cake-layer.top { top: -15px; height: 40px; background: linear-gradient(135deg, #ff9ff3 0%, #f368e0 100%); }
+        .cake-layer.middle { top: 40px; height: 30px; background: linear-gradient(135deg, #ff9ff3 0%, #fd79a8 100%); }
+        .cake-layer.bottom { bottom: 15px; height: 30px; background: linear-gradient(135deg, #ff9ff3 0%, #e84393 100%); }
+
+        /* Candles */
+        .candles {
+            position: absolute;
+            top: -90px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: clamp(30px, 12vw, 70px);
+        }
+
+        .candle {
+            width: 22px;
+            height: 80px;
+            background: linear-gradient(to bottom, #fff, #f5f5f5);
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .flame {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 22px;
+            height: 38px;
+            background: linear-gradient(to bottom, #ffdd59, #ff3f34);
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 25px #ff3f34;
+            animation: flicker 0.8s infinite alternate;
+        }
+
+        .smoke {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background: rgba(200, 200, 200, 0.8);
+            border-radius: 50%;
+            display: none;
+            animation: smokeRise 2s ease-out forwards;
+        }
+
+        /* Controls */
+        .instructions-container {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .progress-container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 14px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 8px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text { margin-top: 8px; font-weight: bold; color: var(--accent); letter-spacing: 1px; }
+
+        /* Animations */
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1); }
+            100% { transform: translateX(-50%) scale(1.1, 0.95); opacity: 0.9; }
+        }
+
+        @keyframes smokeRise {
+            0% { transform: translateX(-50%) translateY(0); opacity: 1; }
+            100% { transform: translateX(30px) translateY(-100px) scale(3); opacity: 0; }
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0); opacity: 0; }
+            10% { opacity: 0.7; }
+            100% { transform: translateY(-110vh) rotate(20deg); opacity: 0; }
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -100px;
+            width: 45px;
+            height: 60px;
+            border-radius: 50%;
+            animation: floatUp var(--float-duration) linear infinite;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-background" id="floatingBackground"></div>
+    
+    <div class="main-wrapper">
+        <div class="birthday-message">
+            <h1 class="birthday-title">Happy Birthday!</h1>
+            <div class="birthday-subtitle">Blow the candles for a surprise...</div>
+        </div>
+
+        <div class="cake-container">
+            <div class="candles" id="candlesContainer">
+                <div class="candle" data-candle="1"><div class="flame"></div><div class="smoke"></div></div>
+                <div class="candle" data-candle="2"><div class="flame"></div><div class="smoke"></div></div>
+                <div class="candle" data-candle="3"><div class="flame"></div><div class="smoke"></div></div>
+            </div>
+            
+            <div class="cake">
+                <div class="cake-layer top"></div>
+                <div class="cake-layer middle"></div>
+                <div class="cake-layer bottom"></div>
+            </div>
+            <div class="plate"></div>
+        </div>
+
+        <div class="instructions-container">
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <p class="progress-text" id="progressText">Tap candles to blow: 0/3</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        Made with ❤️ for a special day
+    </div>
+
+    <script>
+        // Generate Background Balloons
+        function createBalloons() {
+            const container = document.getElementById('floatingBackground');
+            for (let i = 0; i < 20; i++) {
+                const b = document.createElement('div');
+                b.className = 'balloon';
+                b.style.left = Math.random() * 100 + '%';
+                b.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                b.style.setProperty('--float-duration', (Math.random() * 8 + 10) + 's');
+                b.style.animationDelay = Math.random() * 10 + 's';
+                container.appendChild(b);
+            }
+        }
+
+        // Candle Blowing Logic
+        let blownCount = 0;
+        const totalCandles = 3;
+        const candles = document.querySelectorAll('.candle');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        candles.forEach(candle => {
+            const blowOut = () => {
+                if (!candle.classList.contains('blown')) {
+                    candle.classList.add('blown');
+                    candle.querySelector('.flame').style.display = 'none';
+                    candle.querySelector('.smoke').style.display = 'block';
+                    blownCount++;
+                    updateStatus();
+                }
+            };
+
+            candle.addEventListener('click', blowOut);
+            candle.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                blowOut();
+            });
+        });
+
+        function updateStatus() {
+            const percent = (blownCount / totalCandles) * 100;
+            progressBar.style.width = percent + '%';
+            progressText.textContent = `Tap candles to blow: ${blownCount}/${totalCandles}`;
+
+            // Redirect logic after 3rd candle
+            if (blownCount === totalCandles) {
+                progressText.innerHTML = "✨ Wish coming true... ✨";
+                setTimeout(() => {
+                    window.location.href = "2nd_page.html";
+                }, 1200); // Small delay to enjoy the last candle smoke
+            }
+        }
+
+        createBalloons();
+
+        // Prevent zoom on mobile double tap
+        document.addEventListener('touchstart', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>
